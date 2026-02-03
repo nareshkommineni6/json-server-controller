@@ -1,0 +1,15 @@
+namespace: json-server-system
+
+namePrefix: json-server-
+
+resources:
+- ../crd
+- ../rbac
+- ../manager
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+- name: controller
+  newName: controller
+  newTag: latest

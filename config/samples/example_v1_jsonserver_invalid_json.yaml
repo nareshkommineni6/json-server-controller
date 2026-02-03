@@ -1,0 +1,14 @@
+# Invalid example - Invalid JSON config (should be rejected by webhook)
+apiVersion: example.com/v1
+kind: JsonServer
+metadata:
+  name: app-invalid-json
+  namespace: default
+spec:
+  replicas: 1
+  jsonConfig: |
+    {
+      "data": [
+        invalid json here
+      ]
+    }

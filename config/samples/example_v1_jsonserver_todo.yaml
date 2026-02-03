@@ -1,0 +1,35 @@
+# Example JsonServer - Todo API
+apiVersion: example.com/v1
+kind: JsonServer
+metadata:
+  name: app-todo-api
+  namespace: default
+spec:
+  replicas: 1
+  jsonConfig: |
+    {
+      "todos": [
+        {
+          "id": 1,
+          "title": "Learn Kubernetes",
+          "completed": true
+        },
+        {
+          "id": 2,
+          "title": "Build a controller",
+          "completed": false
+        },
+        {
+          "id": 3,
+          "title": "Deploy to production",
+          "completed": false
+        }
+      ],
+      "users": [
+        {
+          "id": 1,
+          "name": "Admin",
+          "email": "admin@example.com"
+        }
+      ]
+    }
