@@ -148,6 +148,28 @@ go test ./... -v
 
 Include these images in PRs or docs when you want to show controller/webhook behavior and test results.
 
+### Image gallery
+
+Below are the current result screenshots stored in the `imgs/` directory. These are referenced with relative paths so they render on GitHub and in other Markdown viewers.
+
+<p align="center">
+  <img src="imgs/image.png" alt="Result 1" width="720" style="margin:8px;"/>
+  <br/>
+  <em>Figure 1: Example controller run / test result</em>
+</p>
+
+<p align="center">
+  <img src="imgs/image-02.png" alt="Result 2" width="720" style="margin:8px;"/>
+  <br/>
+  <em>Figure 2: Additional verification or test output</em>
+</p>
+
+<p align="center">
+  <img src="imgs/image-03.png" alt="Result 3" width="720" style="margin:8px;"/>
+  <br/>
+  <em>Figure 3: Webhook/validation screenshot</em>
+</p>
+
 ## Contributing
 
 - Fork, create a branch, and open a PR with a clear description.
