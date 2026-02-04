@@ -35,6 +35,7 @@ func TestReconcile_CreatesDeployment(t *testing.T) {
 	client := fake.NewClientBuilder().
 		WithScheme(scheme).
 		WithObjects(jsonServer).
+		WithStatusSubresource(jsonServer).
 		Build()
 
 	r := &JsonServerReconciler{
@@ -89,6 +90,7 @@ func TestReconcile_CreatesConfigMap(t *testing.T) {
 	client := fake.NewClientBuilder().
 		WithScheme(scheme).
 		WithObjects(jsonServer).
+		WithStatusSubresource(jsonServer).
 		Build()
 
 	r := &JsonServerReconciler{

@@ -7,6 +7,7 @@ import (
 func TestValidateName_Valid(t *testing.T) {
 	js := &JsonServer{}
 	js.Name = "app-myserver"
+	js.Spec.Replicas = 1
 	js.Spec.JsonConfig = `{"data": []}`
 
 	_, err := js.ValidateCreate()
@@ -18,6 +19,7 @@ func TestValidateName_Valid(t *testing.T) {
 func TestValidateName_Invalid(t *testing.T) {
 	js := &JsonServer{}
 	js.Name = "myserver"
+	js.Spec.Replicas = 1
 	js.Spec.JsonConfig = `{"data": []}`
 
 	_, err := js.ValidateCreate()
@@ -29,6 +31,7 @@ func TestValidateName_Invalid(t *testing.T) {
 func TestValidateJsonConfig_Valid(t *testing.T) {
 	js := &JsonServer{}
 	js.Name = "app-test"
+	js.Spec.Replicas = 1
 	js.Spec.JsonConfig = `{"users": [{"id": 1}]}`
 
 	_, err := js.ValidateCreate()
@@ -40,6 +43,7 @@ func TestValidateJsonConfig_Valid(t *testing.T) {
 func TestValidateJsonConfig_Invalid(t *testing.T) {
 	js := &JsonServer{}
 	js.Name = "app-test"
+	js.Spec.Replicas = 1
 	js.Spec.JsonConfig = `{invalid json}`
 
 	_, err := js.ValidateCreate()
