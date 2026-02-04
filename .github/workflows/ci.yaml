@@ -28,8 +28,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
-    - name: Download dependencies
-      run: go mod download
+    - name: Tidy and download modules
+      run: |
+        go mod tidy
+        go mod download
 
     - name: Generate manifests
       run: make manifests
