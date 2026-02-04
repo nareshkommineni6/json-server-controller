@@ -4,16 +4,16 @@ ARG TARGETOS
 ARG TARGETARCH
 
 WORKDIR /workspace
-# Copy the Go Modules manifests
+
+# Copy everything first
 COPY go.mod go.mod
 COPY go.sum* ./
-# Generate go.sum if missing and download deps
-RUN go mod tidy && go mod download
-
-# Copy the go source
 COPY cmd/ cmd/
 COPY api/ api/
 COPY internal/ internal/
+
+# Download dependencies (go mod tidy needs source files to know what to fetch)
+RUN go mod tidy && go mod download
 
 # Build
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o manager cmd/main.go
