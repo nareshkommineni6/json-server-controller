@@ -1,41 +1,47 @@
 # json-server-controller
 
-Kubernetes controller for managing json-server instances using CRDs.
+Kubernetes controller that manages simple json-server instances via a CustomResourceDefinition (CRD).
 
-## Implementation Checklist
+This repository implements a Kubebuilder-based controller and admission webhook for a `JsonServer` resource. The controller ensures a running Deployment, Service and ConfigMap for each `JsonServer` and keeps Status updated. The webhook enforces name and JSON validation rules.
 
-- [x] Kubebuilder project with CRD for `JsonServer`
-- [x] CRD fields: `replicas` and `jsonConfig`
-- [x] Controller creates Deployment, Service, ConfigMap
-- [x] Admission webhook validates name starts with `app-`
-- [x] Admission webhook validates `jsonConfig` is valid JSON
-- [x] Status updates: `Synced` or `Error` state
-- [x] Support for `kubectl scale` command
-- [x] CI/CD pipeline with ttl.sh for image publishing
+## Table of contents
 
-## Prerequisites
+- Features
+- Architecture
+- CRD (fields & example)
+- Quickstart
+- Development (build & run locally)
+- Testing
+- Samples & images
+- Contributing
 
-- Go 1.21+
-- Docker
-- Kind/K3d/Minikube
-- kubectl
+## Features
 
-## Setup
+- CRD: `JsonServer` (example.com/v1)
+- Controller creates and reconciles:
+  - Deployment (runs json-server)
+  - Service (exposes port 3000)
+  - ConfigMap (contains JSON data served by json-server)
+- Admission webhook validates:
+  - resource name starts with `app-`
+  - `jsonConfig` is valid JSON
+- Status reporting: `Synced` / `Error`
+- Supports scaling via `kubectl scale` and reconciliation
 
-```bash
-# create a cluster
-kind create cluster
+## Architecture
 
-# install the CRD
-make install
+- Controller (Reconciler) watches `JsonServer` resources and ensures associated Kubernetes objects (Deployment, Service, ConfigMap) exist and match the spec.
+- Webhook validates incoming create/update requests for naming and JSON validity.
+- Example code lives under `api/v1` and controller implementation is in `internal/controller`.
 
-# run the controller locally
-ENABLE_WEBHOOKS=false make run
-```
+## CRD: schema and example
 
-## Usage
+Key fields on `spec`:
 
-Create a JsonServer resource:
+- `replicas` (int): desired number of replicas for the json-server Deployment
+- `jsonConfig` (string): raw JSON content served by the json-server process via a ConfigMap
+
+Example resource (short):
 
 ```yaml
 apiVersion: example.com/v1
@@ -53,51 +59,99 @@ spec:
     }
 ```
 
-Apply it:
+Full sample manifests are available in `samples/` (see `samples/example_v1_jsonserver.yaml`).
+
+## Quickstart
+
+Prerequisites:
+
+- Go 1.21+
+- Docker
+- A local Kubernetes cluster (kind, k3d, minikube)
+- kubectl
+
+Steps:
+
+1. Create a local cluster (example using kind):
+
+```bash
+kind create cluster
+```
+
+2. Install the CRD into the cluster:
+
+```bash
+make install
+```
+
+3. Run the controller locally (without webhook):
+
+```bash
+ENABLE_WEBHOOKS=false make run
+```
+
+4. Apply a sample JsonServer resource:
+
 ```bash
 kubectl apply -f config/samples/example_v1_jsonserver.yaml
 ```
 
-This will create:
-- A Deployment running `backplane/json-server`
-- A Service exposing port 3000
-- A ConfigMap with the json data
-
-## Testing
+5. Verify:
 
 ```bash
-# check status
 kubectl get jsonservers
-
-# port forward and test
+kubectl get deploy,svc,cm -l app=jsonserver
 kubectl port-forward svc/app-my-server 3000:3000
 curl http://localhost:3000/people
 ```
 
-## Validation
+## Development
 
-The admission webhook validates:
-- Name must start with `app-`
-- jsonConfig must be valid JSON
-
-## Scaling
+- Build the controller image:
 
 ```bash
-kubectl scale jsonserver app-my-server --replicas=3
+make docker-build IMG=ttl.sh/json-server-controller:dev
 ```
 
-## Building
+- Push image (optional):
 
 ```bash
-# build image
-make docker-build IMG=ttl.sh/json-server-controller:1h
-
-# push
-make docker-push IMG=ttl.sh/json-server-controller:1h
-
-# deploy to cluster
-make deploy IMG=ttl.sh/json-server-controller:1h
+make docker-push IMG=ttl.sh/json-server-controller:dev
 ```
+
+- Deploy controller to cluster:
+
+```bash
+make deploy IMG=ttl.sh/json-server-controller:dev
+```
+
+- Run unit tests:
+
+```bash
+go test ./... -v
+```
+
+## Testing & Validation
+
+- Controller unit tests live under `internal/controller` (see `jsonserver_controller_test.go`).
+- Webhook tests are under `api/v1` (`jsonserver_webhook_test.go`).
+- You can run the full test suite with `go test ./...`.
+
+## Samples & images
+
+- Sample manifests: `samples/` (multiple example YAMLs are provided including invalid cases for testing validation).
+- Result images and screenshots are stored in `imgs/` for documentation and verification. Current images in repository:
+
+  - `imgs/image.png`
+  - `imgs/image-02.png`
+  - `imgs/image-03.png`
+
+Include these images in PRs or docs when you want to show controller/webhook behavior and test results.
+
+## Contributing
+
+- Fork, create a branch, and open a PR with a clear description.
+- Run tests locally and ensure `make test` (if present) or `go test ./...` pass.
 
 ## Cleanup
 
@@ -107,3 +161,11 @@ make undeploy
 make uninstall
 kind delete cluster
 ```
+
+## License
+
+This project is provided under the terms in the `LICENSE` file (if present).
+
+---
+
+If you'd like I can also add a small `README-images.md` that embeds the screenshots from `imgs/` for easier review — tell me if you'd like that and which images to highlight.

@@ -28,3 +28,36 @@ coverage.html
 # OS files
 .DS_Store
 Thumbs.db
+
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go test binary
+*.test
+
+# Output of 'go build' or 'go install'
+/bin/
+/out/
+
+# Vendor directory (if using vendoring)
+/vendor/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Go modules
+/go.sum  # optional
+
+
